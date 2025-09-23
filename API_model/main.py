@@ -18,7 +18,7 @@ security = HTTPBearer()
 logging.basicConfig(level=logging.INFO)
 
 # Load model once at startup
-with open("./model/logistic_regression_model.pkl", "rb") as f:
+with open("../src/model/logistic_regression_model.pkl", "rb") as f:
     model = pickle.load(f)
 
 # initialize app    
@@ -53,7 +53,7 @@ def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
 
 @app.post("/login")
 def login(request: LoginRequest):
-    # Simple auth - replace with real user verification
+    # Simple auth - replace with real user verification with API database or env vile
     if request.username == "admin" and request.password == "password":
         access_token = create_access_token(data={"sub": request.username})
         return {"access_token": access_token, "token_type": "bearer"}
@@ -67,7 +67,7 @@ def health():
 
 @app.post("/predict")
 def predict(request: PredictRequest):
-    logging.info(f"Prediction request: {request.data}")
+    logging.info(f"Prediction with: {request.data}")
 
     try:
         prediction = model.predict([request.data])
@@ -80,4 +80,18 @@ def predict(request: PredictRequest):
         
     
 
+@app.post("/predict_token")
+def predict(request: PredictRequest, user=Depends(verify_token)):
+    logging.info(f"Prediction request from {user}: {request.data}")
+
+    try:
+        prediction = model.predict([request.data])
+        logging.info(f"Prediction result: {prediction}")
+        return {"prediction": prediction.tolist()}
+
+    except:
+        logging.info(f"Prediction Failed")
+        return {"prediction": "failed to predict"}
+        
+    
 
