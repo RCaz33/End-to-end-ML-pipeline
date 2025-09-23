@@ -18,7 +18,7 @@ security = HTTPBearer()
 logging.basicConfig(level=logging.INFO)
 
 # Load model once at startup
-with open("./model/logistic_regression_model.pkl", "rb") as f:
+with open("../src/model/logistic_regression_model.pkl", "rb") as f:
     model = pickle.load(f)
 
 # initialize app    
