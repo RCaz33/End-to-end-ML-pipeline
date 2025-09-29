@@ -9,7 +9,6 @@ import logging
 logging.basicConfig(level=logging.INFO)
 
 # initialize app    
-# app = FastAPI()
 
 app = FastAPI(
     title="API_prediction",
@@ -22,3 +21,10 @@ app.include_router(root_router)
 app.include_router(ml_model_router)
 app.include_router(dev_router)
 
+
+# batch log results on mlflow
+import threading
+from utils import batch_logger
+
+# Start background thread once
+threading.Thread(target=batch_logger, daemon=True).start()

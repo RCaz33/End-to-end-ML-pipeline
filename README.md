@@ -22,35 +22,42 @@ mlops-pipeline/
 - Model training with scikit-learn
 - REST API with FastAPI
 - Docker containerization
-- Cloud deployment
+- Cloud deployment (using Minio to mimick AWS S3 Bucket)
 - Basic monitoring and logging
+- Model versioning using mlflow
+
 
 ## Quick Start
 
-### 1. Train Model
+### 0. Get data
 ```bash
-python src/train.py
+python src/create_data.py
 ```
 
-### 2. Run API Locally
+### 1. Start a mlflow server
 ```bash
-pip install -r requirements.txt
-uvicorn src.app:app --reload
+mlflow server --backend-store-uri sqlite:///src/mlruns.db --host 0.0.0.0 --port 5001
 ```
-Test at `http://localhost:8000/docs`
+
+### 2. Train Models
+```bash
+python src/create_base_model.py
+python src/create_challenger_model.py
+```
+
 
 ### 3. Docker Deployment
 ```bash
-docker build -t ml-pipeline .
-docker run -p 8000:8000 ml-pipeline
+docker build -t model_api .
+docker run -p 4000:8000 model_api
 ```
 
-### 4. Make Predictions
+### 4. Make 10 Predictions to upload to mlflow server
 ```bash
-curl -X POST "http://localhost:8000/predict" \
--H "Content-Type: application/json" \
--d '{"features": [5.1, 3.5, 1.4, 0.2]}'
+python src/predict_dummy.py
 ```
+
+
 
 ## API Endpoints
 - `GET /` - Health check
@@ -58,14 +65,6 @@ curl -X POST "http://localhost:8000/predict" \
 - `POST /predict` - Make predictions
 - `GET /metrics` - Basic metrics
 
-## Deployment
-Deployed on [Heroku/Railway/AWS] at: `https://your-app-url.com`
-
-## Model Performance
-- Accuracy: 95%+
-- ROC-AUC: 99%+
-- Dataset: Breast Cancer
-- Algorithm: Logistic Regression
 
 ## Monitoring
 - Request logging
@@ -79,9 +78,3 @@ Deployed on [Heroku/Railway/AWS] at: `https://your-app-url.com`
 - **Containerization**: Docker
 - **Deployment**: Heroku/Railway
 - **Monitoring**: Python logging
-
-## Next Steps
-- Add model versioning
-- Implement A/B testing
-- Add more sophisticated monitoring
-- Set up CI/CD pipeline
