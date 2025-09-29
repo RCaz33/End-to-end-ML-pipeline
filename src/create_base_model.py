@@ -16,3 +16,5 @@ mlflow.autolog()
 
 train_and_log_model(data, "Baseline_model" ,n_iter = 2, random_state = 42)
 
+if __name__ ='__main__':
+    pass

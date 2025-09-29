@@ -1,21 +1,27 @@
-# MLOps End-to-End Pipeline
+# End-to-End ML Pipeline
 
-A complete machine learning pipeline with training, containerization, deployment, and monitoring.
+This repository contains an end-to-end machine learning pipeline, covering all stages from data ingestion to model deployment.
+
+## Features
+
+- Data collection and preprocessing
+<!-- - Exploratory data analysis (EDA)
+- Feature engineering -->
+- Model training and evaluation
+- Model deployment
 
 ## Project Structure
+
 ```
-mlops-pipeline/
-├── data/
-│   ├── train.csv
-│   └── test.csv
-├── models/
-│   └── model.pkl
-├── src/
-│   ├── train.py
-│   └── app.py
-├── Dockerfile
-├── requirements.txt
-└── README.md
+.
+├── API_Model           # FastAPI app to expose model prediction whilst A/B testing
+├── cloud               # Dummy folder to Mock a cloud hosted mlserver
+├── src/                # Source code for pipeline components
+├   ├── notebooks/      # Jupyter notebooks for EDA and prototyping
+├   ├── data/           # Raw and processed data
+├   ├── models/         # Saved models
+├── requirements.txt    # Python dependencies
+└── README.md           # Project documentation
 ```
 
 ## Features
@@ -27,56 +33,60 @@ mlops-pipeline/
 - Model versioning using mlflow
 
 
-## Quick Start
+## Getting Started
 
-### 0. Get data
+### 1. Clone the repository:
+    ```bash
+    git clone https://github.com/yourusername/End-to-end-ML-pipeline.git
+    cd End-to-end-ML-pipeline
+    ```
+
+### 2. Install dependencies:
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+### 3. Run the pipeline:
+
+0. Get data
 ```bash
 python src/create_data.py
 ```
 
-### 1. Start a mlflow server
+1. Start a mlflow server
 ```bash
 mlflow server --backend-store-uri sqlite:///src/mlruns.db --host 0.0.0.0 --port 5001
 ```
 
-### 2. Train Models
+2. Train Models
 ```bash
 python src/create_base_model.py
 python src/create_challenger_model.py
 ```
 
 
-### 3. Docker Deployment
+3. Docker Deployment
 ```bash
 docker build -t model_api .
 docker run -p 4000:8000 model_api
 ```
 
-### 4. Make 10 Predictions to upload to mlflow server
+4. Make 10 Predictions to upload to mlflow server
 ```bash
 python src/predict_dummy.py
 ```
 
-### 5. Deploy with CD/CI on docker
-
-
 
 ## API Endpoints
-- `GET /` - Health check
-- `GET /health` - Service status
-- `POST /predict` - Make predictions
-- `GET /metrics` - Basic metrics
+- `GET /health` - Health check
+- `POST ML/predict` - Make predictions and log to mlflow
+- `POST dev/predict` - To debug
+- `POST dev/AB_tests_predict` - In developement, log 2 models to compare
 
+## Contributing
 
-## Monitoring
-- Request logging
-- Prediction tracking
-- Health checks
-- Error handling
+Contributions are welcome! Please open issues or submit pull requests.
 
-## Technologies Used
-- **ML**: scikit-learn, pandas, numpy
-- **API**: FastAPI, uvicorn
-- **Containerization**: Docker
-- **Deployment**: Heroku/Railway
-- **Monitoring**: Python logging
+## License
+
+This project is licensed under the MIT License.

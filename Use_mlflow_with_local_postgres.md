@@ -1,92 +1,84 @@
+# PostgreSQL MLflow Setup Guide
 
-1. Follow the Readme
+## 1. Follow the Readme
+```bash
+git clone https://github.com/<user>/<repo>.git
+```
 
-.. code-block:: bash
+## 2. Install PostgreSQL
+```bash
+brew install postgresql
+```
 
-  git clone https://github.com/<user>/<repo>.git
+## 3. Verify that PostgreSQL is installed and running
+```bash
+postgres -V
+```
 
-2. Install PostgreSQL
+## 4. Open PSQL command line
+```bash
+psql postgres
+```
 
-.. code-block:: bash
+## 5. Create a DB User "db_user" with Password "123" (in psql command line)
+```bash
+CREATE ROLE db_user WITH LOGIN PASSWORD '123';
+```
 
-  brew install postgresql
+## 6. Verify the new DB User (in psql command line)
+```bash
+\du
+```
 
-3. Verify that PostgreSQL is installed and running
+## 7. Create Database (in psql command line)
+```bash
+CREATE DATABASE mlflow_db;
+```
 
-.. code-block:: bash
-
-  postgres -V
-
-4. Open PSQL command line
-
-.. code-block:: bash
-
-  psql postgres
-
-5. Create a DB User "db_user" with Password "123" (in psql command line)
-
-.. code-block:: bash
-
-  CREATE ROLE db_user WITH LOGIN PASSWORD '123';
-
-6. Verify the new DB User (in psql command line)
-
-.. code-block:: bash
-
-  \du
-
-7. Create Database (in psql command line)
-
-.. code-block:: bash
-
-  CREATE DATABASE mlflow_db;
-
-
-Create dedicated schema for dbuser
-
-.. code-block:: bash
-
+### Create dedicated schema for dbuser
+```bash
 CREATE SCHEMA mlflow_schema AUTHORIZATION db_user_mlflow;
+```
 
-Grant usage on new database
-
-.. code-block:: bash
-
+### Grant usage on new database
+```bash
 GRANT USAGE ON SCHEMA mlflow_schema TO db_user_mlflow;
 GRANT CREATE ON SCHEMA mlflow_schema TO db_user_mlflow;
+```
 
-SPECIFY SCHEMA FOR USER MLFLOW
-
-.. code-block:: bash
-
+### Specify schema for user MLflow
+```bash
 ALTER ROLE db_user_mlflow SET search_path = mlflow_schema;
+```
 
+## 8. Verify the New Database was created (in psql command line)
+```bash
+\list
+```
 
-8. Verify the New Database was created (in psql command line)
+## 9. Grant the User access to the Database (in psql command line)
+```bash
+GRANT ALL PRIVILEGES ON DATABASE mlflow_db TO db_user;
+```
 
-.. code-block:: bash
+## 10. Check access
+```bash
+\dg
+```
 
-  \list
+## 11. Set up environment variables
 
-9. Grant the User access to the Database (in psql command line)
-
-.. code-block:: bash
-
-    GRANT ALL PRIVILEGES ON DATABASE mlflow_db TO db_user;
-
-10. check access
-
-.. code-block:: bash
-
-  \dg
-
-11. set up environment variables
-
-* tracking metadata locally
+### Tracking metadata locally
+```python
 os.environ['MLFLOW_TRACKING_URI'] = 'postgresql+psycopg2://db_user:123@localhost/mlflow_db'
-* MUST Set MLflow to use the new schema
+```
+
+### MUST Set MLflow to use the new schema
+```python
 os.environ['MLFLOW_TRACKING_URI'] = "postgresql+psycopg2://db_user_mlflow:123@localhost/mlflow_db?options=-csearch_path=mlflow_schema"
+```
 
-
-* serving artifact on AWS S3
+### Serving artifact on AWS S3
+```python
 os.environ['MLFLOW_S3_ENDPOINT_URL'] = 'http://192.168.86.64:9001'
+```
