@@ -1,4 +1,4 @@
-Deploy a FastAPI API on Heroku
+Deploy a FastAPI API directly on Heroku (Not needed if using docker)
 
 1. Create a Heroku account on their website at heroku.com
 

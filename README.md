@@ -57,6 +57,8 @@ docker run -p 4000:8000 model_api
 python src/predict_dummy.py
 ```
 
+### 5. Deploy with CD/CI on docker
+
 
 
 ## API Endpoints
